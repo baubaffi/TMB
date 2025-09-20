@@ -77,6 +77,15 @@ let editPriorityButtons = [];
 let editFileData = null;
 let editFileName = null;
 
+// Управляем блокировкой прокрутки страницы при открытии окна редактирования
+function setEditDialogScrollLock(isLocked) {
+    if (isLocked) {
+        document.body.classList.add('is-edit-dialog-open');
+    } else {
+        document.body.classList.remove('is-edit-dialog-open');
+    }
+}
+
 function ensureDialogControls(dialog) {
     if (!dialog) return null;
     if (!dialog.dataset.controlsBound) {
@@ -96,6 +105,7 @@ function ensureDialogControls(dialog) {
                 form.reset();
             }
             if (dialog === selectors.editDialog) {
+                setEditDialogScrollLock(false);
                 clearEditErrors();
                 setEditPriority('medium', { suggestDue: false });
                 editFileData = null;
@@ -1504,6 +1514,7 @@ function openEditDialog(task) {
     setEditPriority(task.pri || 'medium', { suggestDue: !task.due });
     if (selectors.editFile) selectors.editFile.value = '';
     dialog.showModal();
+    setEditDialogScrollLock(true);
     selectors.editSubject?.focus();
 }
 
