@@ -472,6 +472,7 @@ function handleTaskSave() {
 function collectFormData() {
     const groupInput = selectors.groupField?.value || '';
     const groupMembers = Array.from(new Set(parseGroupInput(groupInput)));
+    const hoursRaw = selectors.hoursField?.value;
     return {
         type: document.getElementById('m-type')?.value || 'work',
         project: selectors.projectField?.value || '',
@@ -482,7 +483,7 @@ function collectFormData() {
         groupInput,
         groupMembers,
         priority: getSelectedPriority(),
-        hours: selectors.hoursField?.value || '',
+        hours: typeof hoursRaw === 'string' ? hoursRaw.trim() : '',
         subject: selectors.subjectField?.value.trim() || '',
         desc: selectors.descField?.value.trim() || '',
         dueDate: selectors.dueDateField?.value || '',
@@ -500,7 +501,8 @@ function validateForm(dataPayload) {
     if (!dataPayload.responsibleInput && !dataPayload.selectedAssignee) {
         errors.push({ field: selectors.responsibleField, messageId: formErrors.responsible });
     }
-    if (!dataPayload.hours) {
+    const hoursValue = Number.parseFloat(dataPayload.hours);
+    if (dataPayload.hours === '' || Number.isNaN(hoursValue) || hoursValue < 0) {
         errors.push({ field: selectors.hoursField, messageId: formErrors.hours });
     }
     if (!dataPayload.subject) {
@@ -520,11 +522,15 @@ function showFormErrors(errors) {
         return;
     }
     selectors.formErrors.innerHTML = '';
+    let firstInvalidField = null;
     errors.forEach(({ field, messageId }) => {
         field?.classList.add('error');
         const message = document.getElementById(messageId);
         if (message) {
             message.style.display = 'block';
+        }
+        if (!firstInvalidField && field && typeof field.focus === 'function') {
+            firstInvalidField = field;
         }
     });
     const alert = document.createElement('div');
@@ -538,6 +544,10 @@ function showFormErrors(errors) {
     `;
     alert.querySelector('[data-dismiss-alert]')?.addEventListener('click', () => alert.remove());
     selectors.formErrors.appendChild(alert);
+    // Для удобства пользователя сразу переводим фокус на первое проблемное поле
+    if (firstInvalidField) {
+        window.requestAnimationFrame(() => firstInvalidField.focus());
+    }
 }
 
 function buildTaskPayload(formData) {
