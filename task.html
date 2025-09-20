@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Задача · Буколпак</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/task.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">
+            <img id="logo-image"
+                 src="assets/img/logo.png"
+                 alt="Буколпак"
+                 data-logo-light="assets/img/logo.png"
+                 data-logo-dark="assets/img/logo_dark.png">
+            <span>Буколпак</span>
+        </a>
+
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="theme-toggle" type="button" title="Сменить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <div class="notifications" id="notifications-control">
+                <button class="notifications-btn" id="notifications-btn" type="button" title="Уведомления" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-badge" aria-live="polite"></span>
+                </button>
+
+                <!-- Выпадающее меню уведомлений -->
+                <div class="notifications-dropdown" id="notifications-dropdown">
+                    <div class="notifications-header">
+                        <div class="notifications-title">Уведомления</div>
+                        <button class="mark-all-read" type="button">Отметить все как прочитанные</button>
+                    </div>
+
+                    <div class="notifications-list" id="notifications-list"></div>
+
+                    <div class="notifications-footer">
+                        <a href="#" class="view-all-link">Показать все уведомления</a>
+                    </div>
+                </div>
+
+                <div class="notifications-modal" id="notifications-modal" aria-hidden="true">
+                    <div class="notifications-modal__backdrop" data-notifications-modal-close></div>
+                    <div class="notifications-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="notifications-modal-title">
+                        <header class="notifications-modal__header">
+                            <h2 class="notifications-modal__heading" id="notifications-modal-title">Все уведомления</h2>
+                            <div class="notifications-modal__actions">
+                                <button class="notifications-modal__mark-all" type="button" data-notifications-modal-mark-all>Отметить все как прочитанные</button>
+                                <button class="notifications-modal__close" type="button" aria-label="Закрыть" data-notifications-modal-close>
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="notifications-modal__body" data-notifications-modal-list></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-user" data-role="user-menu">
+                <button id="user-menu-button" class="user-chip" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu-panel">
+                    <span class="user-chip__avatar" aria-hidden="true"></span>
+                    <span class="user-chip__meta">
+                        <span class="user-chip__name"></span>
+                        <span class="user-chip__role"></span>
+                    </span>
+                </button>
+                <div id="user-menu-panel" class="dropdown-panel profile-dropdown" role="menu">
+                    <div class="profile-dropdown__header">
+                        <span class="profile-dropdown__avatar" data-profile-avatar aria-hidden="true"></span>
+                        <div class="profile-dropdown__meta">
+                            <span class="profile-dropdown__name" data-profile-name></span>
+                            <span class="profile-dropdown__role" data-profile-role></span>
+                            <span class="profile-dropdown__mail" data-profile-mail></span>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown__actions">
+                        <a class="profile-dropdown__action profile-dropdown__action--primary" role="menuitem" href="profile.html">Открыть профиль</a>
+                        <a class="profile-dropdown__action" role="menuitem" href="auth.html">Выйти из аккаунта</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logout-btn" type="button" title="Выйти">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+
+            <div class="navbar-overdue" id="navbar-overdue" role="alert" hidden>
+                <span class="navbar-overdue__icon">
+                    <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+                </span>
+                <span class="navbar-overdue__text">Все задачи под контролем</span>
+                <a class="navbar-overdue__link" href="task.html">Открыть задачу</a>
+            </div>
+        </div>
+
+    </nav>
+
+    <main class="container task-page" role="main">
+        <section class="card task-card" id="task-header">
+            <a class="task-card__back" href="main.html">
+                <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-arrow-right"></use></svg>
+                <span>К списку задач</span>
+            </a>
+            <span class="task-card__identifier" id="task-identifier" aria-live="polite">Задача —</span>
+            <h1 class="task-card__title" id="task-title">Загрузка…</h1>
+            <p class="task-card__project" id="task-project"></p>
+            <div class="task-card__chips" role="list" hidden aria-hidden="true">
+                <span class="chip chip--status" id="task-status" role="listitem"></span>
+                <span class="chip chip--priority" id="task-priority" role="listitem"></span>
+                <span class="chip chip--due" id="task-due" role="listitem"></span>
+            </div>
+            <div class="task-card__actions" role="group" aria-label="Действия" hidden aria-hidden="true">
+                <button class="action-button action-button--accent" id="take-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+                    </span>
+                    <span class="action-button__label">Взять в работу</span>
+                </button>
+                <button class="action-button action-button--success" id="complete-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-check"></use></svg>
+                    </span>
+                    <span class="action-button__label">Завершить</span>
+                </button>
+                <button class="action-button action-button--accent" id="review-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-send"></use></svg>
+                    </span>
+                    <span class="action-button__label">Отправить на проверку</span>
+                </button>
+                <button class="action-button action-button--success" id="approve-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-check"></use></svg>
+                    </span>
+                    <span class="action-button__label">Подтвердить выполнение</span>
+                </button>
+                <button class="action-button" id="edit-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-edit"></use></svg>
+                    </span>
+                    <span class="action-button__label">Редактировать</span>
+                </button>
+                <button class="action-button" id="reassign-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-edit"></use></svg>
+                    </span>
+                    <span class="action-button__label">Переназначить</span>
+                </button>
+                <button class="action-button" id="snooze-button" type="button">
+                    <span class="action-button__icon" aria-hidden="true">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-clock"></use></svg>
+                    </span>
+                    <span class="action-button__label">Отложить</span>
+                </button>
+            </div>
+        </section>
+
+        <section class="task-alert card" id="overdue-banner" role="alert" aria-hidden="true" hidden>
+            <div class="task-alert__icon">
+                <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+            </div>
+            <div class="task-alert__body">
+                <h2 class="task-alert__title">Просроченные задачи</h2>
+                <p class="task-alert__text" id="overdue-banner-text">Все задачи под контролем.</p>
+            </div>
+            <a class="task-alert__action" id="overdue-banner-action" href="main.html#overdue">Открыть список</a>
+        </section>
+
+        <section class="task-layout" aria-live="polite" hidden aria-hidden="true">
+            <article class="card task-details" id="task-details">
+                <div class="task-details__header">
+                    <div>
+                        <h2 class="task-details__title">Детали задачи</h2>
+                        <p class="task-details__subtitle" id="task-summary">Обновлено: —</p>
+                    </div>
+                </div>
+                <dl class="task-details__grid" role="list">
+                    <div class="task-details__item" role="listitem">
+                        <dt>Автор</dt>
+                        <dd id="task-author">—</dd>
+                    </div>
+                    <div class="task-details__item" role="listitem">
+                        <dt>Ответственный</dt>
+                        <dd id="task-responsible">—</dd>
+                    </div>
+                    <div class="task-details__item" role="listitem">
+                        <dt>Участники</dt>
+                        <dd id="task-participants">—</dd>
+                    </div>
+                    <div class="task-details__item" role="listitem">
+                        <dt>Рабочая группа</dt>
+                        <dd id="task-workgroup">—</dd>
+                    </div>
+                    <div class="task-details__item" id="task-work-acceptance-row" role="listitem">
+                        <dt>Принятие в работу</dt>
+                        <dd id="task-work-acceptance">—</dd>
+                    </div>
+                    <div class="task-details__item" role="listitem">
+                        <dt>Создана</dt>
+                        <dd id="task-created">—</dd>
+                    </div>
+                    <div class="task-details__item" role="listitem">
+                        <dt>Последнее обновление</dt>
+                        <dd id="task-updated">—</dd>
+                    </div>
+                </dl>
+                <div class="task-details__description" id="task-description"></div>
+            </article>
+
+            <aside class="card task-timeline" id="task-timeline">
+                <h2 class="task-timeline__title">Лента активности</h2>
+                <ol class="timeline" id="timeline-list"></ol>
+            </aside>
+        </section>
+
+        <section class="card task-comments" aria-labelledby="comments-heading" hidden aria-hidden="true">
+            <div class="task-comments__header">
+                <h2 id="comments-heading">Комментарии</h2>
+                <span id="comment-permission" class="chip chip--muted"></span>
+            </div>
+            <div id="comments-list" class="comment-list"></div>
+            <form id="comment-form" class="comment-form" aria-hidden="true" hidden>
+                <div class="comment-toolbar" role="toolbar" aria-label="Форматирование">
+                    <button type="button" data-command="bold" class="comment-toolbar__button" aria-label="Полужирный">
+                        <i class="fas fa-bold" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" data-command="italic" class="comment-toolbar__button" aria-label="Курсив">
+                        <i class="fas fa-italic" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" data-command="insertUnorderedList" class="comment-toolbar__button" aria-label="Маркированный список">
+                        <i class="fas fa-list-ul" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div id="comment-editor" class="comment-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="Напишите комментарий и используйте @ для упоминаний"></div>
+                <div class="comment-form__footer">
+                    <div class="comment-hint"><i class="fas fa-lightbulb" aria-hidden="true"></i><span>Ctrl + Enter — отправить</span></div>
+                    <div class="comment-actions">
+                        <button type="button" class="btn btn-secondary" id="comment-cancel">Отмена</button>
+                        <button type="submit" class="btn btn-primary" id="comment-submit">Отправить</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <dialog id="edit-dialog" class="modal">
+        <form method="dialog" class="modal__body modal__body--wide" id="edit-form">
+            <header class="modal__header">
+                <div>
+                    <h2 id="edit-form-heading">Редактировать задачу</h2>
+                    <p class="modal__hint">Измените поля задачи. Обновление доступно только автору.</p>
+                </div>
+            </header>
+            <div id="edit-form-errors"></div>
+            <div class="form form--modal" role="group" aria-labelledby="edit-form-heading">
+                <div class="lab">Тип</div>
+                <div>
+                    <select id="edit-type" class="input">
+                        <option value="work">Рабочая</option>
+                        <option value="discussion">Задача-обсуждение</option>
+                        <option value="info">Информационная</option>
+                    </select>
+                </div>
+
+                <div class="lab">Проект</div>
+                <div>
+                    <select id="edit-project" class="input">
+                        <option value="">-- Выберите проект --</option>
+                        <option>ЦРМК Буколпак</option>
+                        <option>Киноклуб Кадр</option>
+                        <option>Антикафе Ковёр</option>
+                        <option>Литературный клуб Переплёт</option>
+                        <option>Подкаст десятиминутка</option>
+                        <option>Турпроект Цифровой Торжокъ</option>
+                        <option>Творческий проект Виинил</option>
+                        <option>Проект Колпачки</option>
+                    </select>
+                    <div class="error-message field-error" id="edit-project-error">Выберите проект</div>
+                </div>
+
+                <div class="lab">Приватность</div>
+                <div>
+                    <select id="edit-privacy" class="input">
+                        <option value="public">Открытая</option>
+                        <option value="private">Приватная (только участники)</option>
+                    </select>
+                </div>
+
+                <div class="lab">Направление</div>
+                <div class="row2">
+                    <select id="edit-direction" class="input">
+                        <option value="">— Для всех —</option>
+                        <option value="СТН">Социально‑творческое (СТН)</option>
+                        <option value="ОАН">Организационно‑аналитическое (ОАН)</option>
+                        <option value="НМСД">Маркетинг, СММ и Дизайн (НМСД)</option>
+                        <option value="НОиМ">Обучение и методология (НОиМ)</option>
+                        <option value="ННиА">Набор и адаптация (ННиА)</option>
+                    </select>
+                    <select id="edit-assignee-dir" class="input">
+                        <option value="">— Выберем позже —</option>
+                    </select>
+                </div>
+
+                <div class="lab">Ответственный</div>
+                <div>
+                    <input id="edit-responsible" class="input" placeholder="ФИО или @username">
+                    <div class="error-message field-error" id="edit-responsible-error">Укажите ответственного</div>
+                </div>
+
+                <div class="lab">Рабочая группа</div>
+                <div>
+                    <input id="edit-group" class="input" placeholder="@user1, @user2">
+                </div>
+
+                <div class="lab">Приоритет</div>
+                <div class="seg" id="edit-pri-seg">
+                    <button class="opt low" data-pri="low" type="button">Низкий (+15 дней)</button>
+                    <button class="opt med" data-pri="medium" type="button">Средний (+7 дней)</button>
+                    <button class="opt high" data-pri="high" type="button">Высокий (+3 дня)</button>
+                </div>
+
+                <div class="lab">Исполнить до</div>
+                <div class="row2">
+                    <input id="edit-due-date" type="date" class="input">
+                    <input id="edit-due-time" type="time" class="input">
+                </div>
+
+                <div class="lab">Планируемые часы</div>
+                <div>
+                    <input id="edit-hours" type="number" step="0.5" min="0" class="input" placeholder="0">
+                    <div class="error-message field-error" id="edit-hours-error">Укажите количество часов</div>
+                </div>
+
+                <div class="lab">Тема</div>
+                <div>
+                    <input id="edit-subject" class="input" placeholder="Например: Подготовить макет афиши к показу">
+                    <div class="error-message field-error" id="edit-subject-error">Укажите тему задачи</div>
+                </div>
+
+                <div class="lab">Текст</div>
+                <div>
+                    <textarea id="edit-desc" placeholder="Детали задачи, чек‑лист, ссылки"></textarea>
+                    <div class="error-message field-error" id="edit-desc-error">Добавьте описание задачи</div>
+                </div>
+
+                <div class="lab">Файл</div>
+                <div class="filebox"><input id="edit-file" type="file"></div>
+            </div>
+            <div class="modal__actions">
+                <button value="cancel" class="modal__button" data-dialog-cancel type="button">Отмена</button>
+                <button value="confirm" class="modal__button modal__button--primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="reassign-dialog" class="modal">
+        <form method="dialog" class="modal__body">
+            <h2>Переназначить задачу</h2>
+            <p class="modal__hint">Выберите нового ответственного из списка участников и укажите причину.</p>
+            <div id="reassign-list" class="modal__list" role="radiogroup"></div>
+            <label class="modal__field" for="reassign-reason">
+                <span>Причина переназначения<span aria-hidden="true">*</span></span>
+                <textarea id="reassign-reason" rows="3" required placeholder="Кратко опишите, почему требуется смена ответственного"></textarea>
+            </label>
+            <div class="modal__actions">
+                <button value="cancel" class="modal__button" data-dialog-cancel type="button">Отмена</button>
+                <button value="confirm" class="modal__button modal__button--primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="snooze-dialog" class="modal">
+        <form method="dialog" class="modal__body">
+            <h2>Отложить задачу</h2>
+            <p class="modal__hint">Выберите новую дату напоминания и, при необходимости, оставьте комментарий.</p>
+            <label class="modal__field" for="snooze-date">
+                <span>Дата напоминания</span>
+                <input type="date" id="snooze-date" required>
+            </label>
+            <label class="modal__field" for="snooze-time">
+                <span>Время напоминания</span>
+                <input type="time" id="snooze-time" required>
+            </label>
+            <label class="modal__field" for="snooze-reason">
+                <span>Комментарий для команды<span aria-hidden="true">*</span></span>
+                <textarea id="snooze-reason" rows="3" placeholder="Сообщение для участников задачи" required></textarea>
+            </label>
+            <div class="modal__actions">
+                <button value="cancel" class="modal__button" data-dialog-cancel type="button">Отмена</button>
+                <button value="confirm" class="modal__button modal__button--primary" type="submit">Отложить</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script src="assets/img/system-icons.svg" aria-hidden="true"></script>
+    <script src="assets/js/dataLayer.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/task.js" type="module"></script>
+</body>
+</html>

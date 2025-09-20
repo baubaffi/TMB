@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Буколпак · Система управления задачами</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+</head>
+<body>
+    <!-- Навигационная панель -->
+    <nav class="navbar">
+        <a href="#" class="navbar-brand">
+            <img id="logo-image"
+                 src="assets/img/logo.png"
+                 alt="Буколпак"
+                 data-logo-light="assets/img/logo.png"
+                 data-logo-dark="assets/img/logo_dark.png">
+            <span>Буколпак</span>
+        </a>
+
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="theme-toggle" type="button" title="Сменить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <div class="notifications" id="notifications-control">
+                <button class="notifications-btn" id="notifications-btn" type="button" title="Уведомления" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-badge" aria-live="polite"></span>
+                </button>
+
+                <!-- Выпадающее меню уведомлений -->
+                <div class="notifications-dropdown" id="notifications-dropdown">
+                    <div class="notifications-header">
+                        <div class="notifications-title">Уведомления</div>
+                        <button class="mark-all-read" type="button">Отметить все как прочитанные</button>
+                    </div>
+
+                    <div class="notifications-list" id="notifications-list">
+                        <!-- Уведомления будут добавлены через JavaScript -->
+                    </div>
+
+                    <div class="notifications-footer">
+                        <a href="#" class="view-all-link">Показать все уведомления</a>
+                    </div>
+                </div>
+
+                <div class="notifications-modal" id="notifications-modal" aria-hidden="true">
+                    <div class="notifications-modal__backdrop" data-notifications-modal-close></div>
+                    <div class="notifications-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="notifications-modal-title">
+                        <header class="notifications-modal__header">
+                            <h2 class="notifications-modal__heading" id="notifications-modal-title">Все уведомления</h2>
+                            <div class="notifications-modal__actions">
+                                <button class="notifications-modal__mark-all" type="button" data-notifications-modal-mark-all>Отметить все как прочитанные</button>
+                                <button class="notifications-modal__close" type="button" aria-label="Закрыть" data-notifications-modal-close>
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="notifications-modal__body" data-notifications-modal-list></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-user" data-role="user-menu">
+                <button id="user-menu-button" class="user-chip" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu-panel">
+                    <span class="user-chip__avatar" aria-hidden="true"></span>
+                    <span class="user-chip__meta">
+                        <span class="user-chip__name"></span>
+                        <span class="user-chip__role"></span>
+                    </span>
+                </button>
+                <div id="user-menu-panel" class="profile-dropdown" role="menu">
+                    <div class="profile-dropdown__header">
+                        <span class="profile-dropdown__avatar" data-profile-avatar aria-hidden="true"></span>
+                        <div class="profile-dropdown__meta">
+                            <span class="profile-dropdown__name" data-profile-name></span>
+                            <span class="profile-dropdown__role" data-profile-role></span>
+                            <span class="profile-dropdown__mail" data-profile-mail></span>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown__actions">
+                        <a class="profile-dropdown__action profile-dropdown__action--primary" role="menuitem" href="profile.html">Открыть профиль</a>
+                        <a class="profile-dropdown__action" role="menuitem" href="auth.html">Выйти из аккаунта</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logout-btn" type="button" title="Выйти">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+
+            <div class="navbar-overdue" id="navbar-overdue" role="alert" hidden>
+                <span class="navbar-overdue__icon">
+                    <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+                </span>
+                <span class="navbar-overdue__text">Все задачи под контролем</span>
+                <a class="navbar-overdue__link" href="task.html">Открыть задачу</a>
+            </div>
+        </div>
+
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="container" role="main">
+        <!-- Заголовок дашборда -->
+        <div class="dashboard-header">
+            <div class="welcome-message">
+                <h1>Добро пожаловать, Алексей!</h1>
+                <p id="active-task-message">У вас 0 активных задач на сегодня</p>
+            </div>
+
+            <div class="quick-actions">
+                <button class="btn btn-secondary" type="button">
+                    <i class="fas fa-filter"></i> Фильтр
+                </button>
+                <button class="btn btn-primary" id="new-task-btn" type="button">
+                    <i class="fas fa-plus"></i> Новая задача
+                </button>
+            </div>
+        </div>
+
+        <!-- Дашборд -->
+        <div class="dashboard">
+            <!-- Статистика -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-chart-line"></i> Статистика</h2>
+                    <span class="text-muted">Сегодня</span>
+                </div>
+                
+                <div class="stats-grid" aria-live="polite">
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-total">0</span>
+                        <span class="stat-label">Всего задач</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-progress">0</span>
+                        <span class="stat-label">В работе</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-done">0</span>
+                        <span class="stat-label">Выполнено</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="stat-overdue">0</span>
+                        <span class="stat-label">Просрочено</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Срочные задачи -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-exclamation-circle"></i> Срочные задачи</h2>
+                    <span class="text-muted">Приоритет Высокий</span>
+                </div>
+
+                <div class="task-list" id="urgent-tasks">
+                    <!-- Задачи будут добавлены через JavaScript -->
+                </div>
+            </div>
+
+            <div class="card card-overdue">
+                <div class="card-header">
+                    <h2 class="card-title"><i class="fas fa-fire"></i> Просроченные задачи</h2>
+                    <span class="text-muted">Требуют немедленного внимания</span>
+                </div>
+
+                <div class="task-list overdue-list" id="overdue-tasks">
+                    <!-- Просроченные задачи -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Доска задач -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-tasks"></i> Доска задач</h2>
+                <div class="card-header-actions">
+                    <button class="btn btn-secondary" id="toggle-all-tasks" type="button">
+                        <i class="fas fa-layer-group"></i> Показать все задачи
+                    </button>
+                    <button class="btn btn-secondary" type="button">
+                        <i class="fas fa-cog"></i> Настроить
+                    </button>
+                </div>
+            </div>
+            
+            <div class="board" id="task-board">
+                <div class="board-column">
+                    <div class="column-header">
+                        <h3 class="column-title"><i class="fas fa-list-ul"></i> К выполнению</h3>
+                        <span class="column-count">3</span>
+                    </div>
+                    <div class="column-tasks" id="col-new">
+                        <!-- Задачи будут добавлены через JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="board-column">
+                    <div class="column-header">
+                        <h3 class="column-title"><i class="fas fa-spinner"></i> В работе</h3>
+                        <span class="column-count">4</span>
+                    </div>
+                    <div class="column-tasks" id="col-progress">
+                        <!-- Задачи будут добавлены через JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="board-column">
+                    <div class="column-header">
+                        <h3 class="column-title"><i class="fas fa-check-circle"></i> Готово</h3>
+                        <span class="column-count">3</span>
+                    </div>
+                    <div class="column-tasks" id="col-done">
+                        <!-- Задачи будут добавлены через JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Недавняя активность -->
+        <div class="card mt-24">
+            <div class="card-header">
+                <h2 class="card-title"><i class="fas fa-history"></i> Недавняя активность</h2>
+                <button class="btn btn-secondary" type="button">
+                    <i class="fas fa-expand"></i> Все действия
+                </button>
+            </div>
+            
+            <div class="task-list" id="recent-activity">
+                <!-- Активность будет добавлена через JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно создания задачи -->
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="m-title-h">
+        <div class="win">
+            <h3 style="margin:0" id="m-title-h">Новая задача</h3>
+            
+            <!-- Контейнер для сообщений об ошибках -->
+            <div id="form-errors"></div>
+            
+            <div class="form">
+                <div class="lab">Тип</div>
+                <div>
+                    <select id="m-type" class="input">
+                        <option value="work">Рабочая</option>
+                        <option value="discussion">Задача-обсуждение</option>
+                        <option value="info">Информационная</option>
+                    </select>
+                </div>
+                <div class="lab">Проект</div>
+                <div>
+                    <select id="m-project" class="input">
+                        <option value="">-- Выберите проект --</option>
+                        <option>ЦРМК Буколпак</option>
+                        <option>Киноклуб Кадр</option>
+                        <option>Антикафе Ковёр</option>
+                        <option>Литературный клуб Переплёт</option>
+                        <option>Подкаст десятиминутка</option>
+                        <option>Турпроект Цифровой Торжокъ</option>
+                        <option>Творческий проект Виинил</option>
+                        <option>Проект Колпачки</option>
+                    </select>
+                    <div class="error-message field-error" id="m-project-error">Выберите проект</div>
+                </div>
+                <div class="lab">Приватность</div>
+                <div>
+                    <select id="m-privacy" class="input">
+                        <option value="public">Открытая</option>
+                        <option value="private">Приватная (только участники)</option>
+                    </select>
+                </div>
+                <div class="lab">Направление</div>
+                <div class="row2">
+                    <select id="m-direction" class="input">
+                        <option value="">— Для всех —</option>
+                        <option value="СТН">Социально‑творческое (СТН)</option>
+                        <option value="ОАН">Организационно‑аналитическое (ОАН)</option>
+                        <option value="НМСД">Маркетинг, СММ и Дизайн (НМСД)</option>
+                        <option value="НОиМ">Обучение и методология (НОиМ)</option>
+                        <option value="ННиА">Набор и адаптация (ННиА)</option>
+                    </select>
+                    <select id="m-assignee-dir" class="input">
+                        <option value="">— Выберем позже —</option>
+                    </select>
+                </div>
+                <div class="lab">Ответственный</div>
+                <div>
+                    <input id="m-responsible" class="input" placeholder="ФИО или @username"/>
+                    <div class="error-message field-error" id="m-responsible-error">Укажите ответственного</div>
+                </div>
+                <div class="lab">Рабочая группа</div>
+                <div>
+                    <input id="m-group" class="input" placeholder="@user1, @user2"/>
+                </div>
+                <div class="lab">Приоритет</div>
+                <div class="seg" id="pri-seg">
+                    <button class="opt low" data-pri="low" type="button">Низкий (+15 дней)</button>
+                    <button class="opt med sel" data-pri="medium" type="button">Средний (+7 дней)</button>
+                    <button class="opt high" data-pri="high" type="button">Высокий (+3 дня)</button>
+                </div>
+                <div class="lab">Исполнить до</div>
+                <div class="row2">
+                    <input id="m-due-date" type="date" class="input"/>
+                    <input id="m-due-time" type="time" class="input"/>
+                </div>
+                <div class="lab">Планируемые часы</div>
+                <div>
+                    <input id="m-hours" type="number" step="0.5" min="0" class="input" placeholder="0"/>
+                    <div class="error-message field-error" id="m-hours-error">Укажите количество часов</div>
+                </div>
+                <div class="lab">Тема</div>
+                <div>
+                    <input id="m-subject" class="input" placeholder="Например: Подготовить макет афиши к показу"/>
+                    <div class="error-message field-error" id="m-subject-error">Укажите тему задачи</div>
+                </div>
+                <div class="lab">Текст</div>
+                <div>
+                    <textarea id="m-desc" placeholder="Детали задачи, чек‑лист, ссылки"></textarea>
+                    <div class="error-message field-error" id="m-desc-error">Добавьте описание задачи</div>
+                </div>
+                <div class="lab">Файл</div>
+                <div class="filebox"><input id="m-file" type="file"/></div>
+                <div></div>
+                <div style="display:flex;gap:8px;justify-content:flex-end">
+                    <button class="btn btn-secondary" id="m-cancel" type="button">Отмена</button>
+                    <button class="btn btn-primary" id="m-save" type="button">Создать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/img/system-icons.svg" aria-hidden="true"></script>
+    <script src="assets/js/dataLayer.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
