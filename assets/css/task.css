@@ -3,10 +3,16 @@
     --task-radius-md: 16px;
     --task-radius-sm: 12px;
     --task-shadow: 0 18px 32px rgba(15, 23, 42, 0.12);
+    --task-action-bg: #f1f3f5;
+    --task-action-text: #1f2933;
+    --task-action-border: rgba(17, 24, 39, 0.12);
 }
 
 :root[data-theme="dark"] {
     --task-shadow: 0 24px 38px rgba(0, 0, 0, 0.6);
+    --task-action-bg: #f1f3f5;
+    --task-action-text: #1f2933;
+    --task-action-border: rgba(17, 24, 39, 0.18);
 }
 
 .task-page {
@@ -167,17 +173,13 @@
     gap: 10px;
     padding: 10px 20px;
     border-radius: 999px;
-    border: 1px solid var(--border);
-    background: var(--muted);
-    color: var(--text);
+    border: 1px solid var(--task-action-border, var(--border));
+    background: var(--task-action-bg, var(--muted));
+    color: var(--task-action-text, var(--text));
     font-size: 14px;
     font-weight: 600;
     transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     cursor: pointer;
-}
-
-:root[data-theme="dark"] .action-button {
-    background: rgba(255, 255, 255, 0.08);
 }
 
 .action-button:hover:not(:disabled) {
@@ -427,6 +429,14 @@
     margin-bottom: 0;
 }
 
+.task-timeline {
+    display: flex;
+    flex-direction: column;
+    max-height: min(560px, 72vh);
+    overflow: hidden;
+}
+
+/* Делаем ленту активности прокручиваемой при большом количестве событий */
 .task-timeline__title {
     margin: 0 0 20px;
     font-size: 18px;
@@ -439,6 +449,34 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(17, 24, 39, 0.24) transparent;
+    scrollbar-gutter: stable;
+}
+
+.timeline::-webkit-scrollbar {
+    width: 6px;
+}
+
+.timeline::-webkit-scrollbar-thumb {
+    background: rgba(17, 24, 39, 0.24);
+    border-radius: 999px;
+}
+
+:root[data-theme="dark"] .timeline::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+:root[data-theme="dark"] .timeline {
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.timeline::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .timeline li {
@@ -759,6 +797,11 @@
     justify-content: flex-end;
     gap: 12px;
     margin-top: 0;
+}
+
+/* Блокируем прокрутку страницы во время редактирования задачи */
+body.is-edit-dialog-open {
+    overflow: hidden;
 }
 
 .inline-alert {
@@ -1107,6 +1150,15 @@
     .task-timeline,
     .task-comments {
         padding: 24px;
+    }
+
+    .task-timeline {
+        max-height: none;
+    }
+
+    .timeline {
+        overflow: visible;
+        padding-right: 0;
     }
 
     .task-card__actions {
