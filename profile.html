@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль · Буколпак</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/profile.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="main.html" class="navbar-brand">
+            <img id="logo-image"
+                 src="assets/img/logo.png"
+                 alt="Буколпак"
+                 data-logo-light="assets/img/logo.png"
+                 data-logo-dark="assets/img/logo_dark.png">
+            <span>Буколпак</span>
+        </a>
+
+        <div class="navbar-actions">
+            <button class="theme-toggle" id="theme-toggle" type="button" title="Сменить тему">
+                <i class="fas fa-moon"></i>
+            </button>
+
+            <div class="notifications" id="notifications-control">
+                <button class="notifications-btn" id="notifications-btn" type="button" title="Уведомления" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-badge" aria-live="polite"></span>
+                </button>
+
+                <!-- Выпадающее меню уведомлений -->
+                <div class="notifications-dropdown" id="notifications-dropdown">
+                    <div class="notifications-header">
+                        <div class="notifications-title">Уведомления</div>
+                        <button class="mark-all-read" type="button">Отметить все как прочитанные</button>
+                    </div>
+
+                    <div class="notifications-list" id="notifications-list"></div>
+
+                    <div class="notifications-footer">
+                        <a href="#" class="view-all-link">Показать все уведомления</a>
+                    </div>
+                </div>
+
+                <div class="notifications-modal" id="notifications-modal" aria-hidden="true">
+                    <div class="notifications-modal__backdrop" data-notifications-modal-close></div>
+                    <div class="notifications-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="notifications-modal-title">
+                        <header class="notifications-modal__header">
+                            <h2 class="notifications-modal__heading" id="notifications-modal-title">Все уведомления</h2>
+                            <div class="notifications-modal__actions">
+                                <button class="notifications-modal__mark-all" type="button" data-notifications-modal-mark-all>Отметить все как прочитанные</button>
+                                <button class="notifications-modal__close" type="button" aria-label="Закрыть" data-notifications-modal-close>
+                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="notifications-modal__body" data-notifications-modal-list></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar-user" data-role="user-menu">
+                <button id="user-menu-button" class="user-chip" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="user-menu-panel">
+                    <span class="user-chip__avatar" aria-hidden="true"></span>
+                    <span class="user-chip__meta">
+                        <span class="user-chip__name"></span>
+                        <span class="user-chip__role"></span>
+                    </span>
+                </button>
+                <div id="user-menu-panel" class="dropdown-panel profile-dropdown" role="menu">
+                    <div class="profile-dropdown__header">
+                        <span class="profile-dropdown__avatar" data-profile-avatar aria-hidden="true"></span>
+                        <div class="profile-dropdown__meta">
+                            <span class="profile-dropdown__name" data-profile-name></span>
+                            <span class="profile-dropdown__role" data-profile-role></span>
+                            <span class="profile-dropdown__mail" data-profile-mail></span>
+                        </div>
+                    </div>
+                    <div class="profile-dropdown__actions">
+                        <a class="profile-dropdown__action profile-dropdown__action--primary" role="menuitem" href="profile.html">Открыть профиль</a>
+                        <a class="profile-dropdown__action" role="menuitem" href="auth.html">Выйти из аккаунта</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="logout-btn" id="logout-btn" type="button" title="Выйти">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+
+            <div class="navbar-overdue" id="navbar-overdue" role="alert" hidden>
+                <span class="navbar-overdue__icon">
+                    <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+                </span>
+                <span class="navbar-overdue__text">Все задачи под контролем</span>
+                <a class="navbar-overdue__link" href="task.html">Открыть задачу</a>
+            </div>
+        </div>
+
+    </nav>
+
+    <main class="container profile-page" role="main">
+        <section class="task-alert card" id="overdue-banner" role="alert" aria-hidden="true" hidden>
+            <div class="task-alert__icon">
+                <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-flag"></use></svg>
+            </div>
+            <div class="task-alert__body">
+                <h2 class="task-alert__title">Просроченные задачи</h2>
+                <p class="task-alert__text" id="overdue-banner-text">Все задачи под контролем.</p>
+            </div>
+            <a class="task-alert__action" id="overdue-banner-action" href="main.html#overdue">Открыть список</a>
+        </section>
+
+        <section class="profile-cover card" aria-label="Фон профиля">
+            <div class="profile-cover__image" id="cover-preview" role="img" aria-label="Обложка профиля"></div>
+            <label class="file-drop" for="cover-input" data-type="cover">
+                <input type="file" id="cover-input" accept="image/*" hidden>
+                <span class="file-drop__icon">
+                    <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-upload"></use></svg>
+                </span>
+                <span class="file-drop__label">Перетащите изображение или выберите файл</span>
+                <span class="file-drop__hint">JPG, PNG или WebP, до 4 МБ</span>
+            </label>
+        </section>
+
+        <section class="profile-card card">
+            <div class="profile-card__header">
+                <div class="profile-avatar" id="avatar-preview" aria-hidden="true"></div>
+                <label class="profile-avatar__upload file-drop" for="avatar-input" data-type="avatar">
+                    <input type="file" id="avatar-input" accept="image/*" hidden>
+                    <span class="file-drop__icon">
+                        <svg aria-hidden="true" focusable="false"><use href="assets/img/system-icons.svg#icon-upload"></use></svg>
+                    </span>
+                    <span class="file-drop__label">Обновить аватар</span>
+                </label>
+                <div class="profile-summary">
+                    <h1 class="profile-summary__title" id="profile-name">—</h1>
+                    <p class="profile-summary__role" id="profile-role">—</p>
+                    <p class="profile-summary__activity" id="profile-last-activity">Последняя активность: данные загружаются…</p>
+                    <p class="profile-summary__bio" id="profile-bio">—</p>
+                </div>
+            </div>
+
+            <form class="profile-form" id="profile-form">
+                <fieldset class="profile-section" aria-labelledby="contact-heading">
+                    <legend id="contact-heading">Контакты</legend>
+                    <div class="profile-grid">
+                        <label class="profile-field">
+                            <span class="profile-field__label">Полное имя</span>
+                            <input type="text" name="fullName" autocomplete="name" required>
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Должность</span>
+                            <input type="text" name="role" autocomplete="organization-title" required>
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Email</span>
+                            <input type="email" name="email" autocomplete="email" required>
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Телефон</span>
+                            <input type="tel" name="phone" autocomplete="tel">
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Местоположение</span>
+                            <input type="text" name="location" autocomplete="address-level2">
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Местоимения</span>
+                            <input type="text" name="pronouns" placeholder="она/ее">
+                            <span class="profile-field__error"></span>
+                        </label>
+                        <label class="profile-field profile-field--full">
+                            <span class="profile-field__label">О себе</span>
+                            <textarea name="bio" rows="4" maxlength="400"></textarea>
+                            <span class="profile-field__hint">До 400 символов</span>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <fieldset class="profile-section" aria-labelledby="preferences-heading">
+                    <legend id="preferences-heading">Настройки</legend>
+                    <div class="profile-grid">
+                        <label class="profile-field">
+                            <span class="profile-field__label">Тема</span>
+                            <select name="theme">
+                                <option value="light">Светлая</option>
+                                <option value="dark">Тёмная</option>
+                            </select>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Язык</span>
+                            <select name="language">
+                                <option value="ru-RU">Русский</option>
+                                <option value="en-US">English</option>
+                            </select>
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Часовой пояс</span>
+                            <select name="timezone">
+                                <option value="Europe/Moscow">Москва</option>
+                                <option value="Europe/Samara">Самара</option>
+                                <option value="Asia/Yekaterinburg">Екатеринбург</option>
+                                <option value="Asia/Novosibirsk">Новосибирск</option>
+                            </select>
+                        </label>
+                        <div class="profile-toggle">
+                            <label>
+                                <input type="checkbox" name="notifications.system">
+                                <span>Системные сообщения</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="notifications.reminders">
+                                <span>Напоминания о сроках</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="notifications.weekly">
+                                <span>Еженедельный дайджест</span>
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="profile-section" aria-labelledby="presence-heading">
+                    <legend id="presence-heading">Доступность</legend>
+                    <div class="profile-grid">
+                        <label class="profile-field">
+                            <span class="profile-field__label">Часы работы</span>
+                            <input type="text" name="availability.hours" placeholder="09:00 – 18:00">
+                        </label>
+                        <label class="profile-field">
+                            <span class="profile-field__label">Статус</span>
+                            <select name="availability.status">
+                                <option value="available">Доступен</option>
+                                <option value="busy">Занят</option>
+                                <option value="vacation">В отпуске</option>
+                            </select>
+                        </label>
+                        <label class="profile-field profile-field--full">
+                            <span class="profile-field__label">Комментарий</span>
+                            <textarea name="availability.note" rows="3" maxlength="200"></textarea>
+                        </label>
+                    </div>
+                </fieldset>
+
+                <div class="profile-actions">
+                    <p id="profile-status" class="profile-status" role="status" aria-live="polite"></p>
+                    <button type="submit" class="btn btn-primary" id="save-button">Сохранить изменения</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="profile-history card">
+            <h2 class="profile-history__title">Активность</h2>
+            <div class="profile-history__list" id="profile-history"></div>
+        </section>
+    </main>
+
+    <script src="assets/img/system-icons.svg" aria-hidden="true"></script>
+    <script src="assets/js/dataLayer.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/profile.js" type="module"></script>
+</body>
+</html>
