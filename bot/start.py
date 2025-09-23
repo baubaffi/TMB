@@ -15,7 +15,7 @@ MOSCOW_TZ = ZoneInfo("Europe/Moscow")
 
 @dataclass(frozen=True)
 class UserEntry:
-    """Описание пользователя, которому доступна работа с ботом."""
+    """Описание пользователя для персонализации ответов."""
 
     telegram_id: int
     full_name: str
@@ -45,11 +45,14 @@ def _ensure_moscow_time(current_dt: Optional[datetime]) -> datetime:
     return current_dt.astimezone(MOSCOW_TZ)
 
 
-def _resolve_first_name(user_entry: RawUserEntry) -> str:
-    """Извлекает имя пользователя из записи белого списка."""
+def _resolve_first_name(user_entry: Optional[RawUserEntry]) -> str:
+    """Извлекает имя пользователя из справочника."""
+
+    if user_entry is None:
+        return "друг"
 
     if isinstance(user_entry, UserEntry):
-        return user_entry.first_name
+        return user_entry.first_name or "друг"
 
     name_fields = ("full_name", "name", "Имя")
     for field in name_fields:
@@ -60,7 +63,7 @@ def _resolve_first_name(user_entry: RawUserEntry) -> str:
     if "ФИО" in user_entry and isinstance(user_entry["ФИО"], str):
         return user_entry["ФИО"].split()[0]
 
-    return ""
+    return "друг"
 
 
 def _select_greeting(current_time: datetime) -> str:
@@ -89,11 +92,10 @@ def handle_start_command(
 
     user_entry = users.get(telegram_user_id)
     if user_entry is None:
-        LOGGER.warning(
-            "Попытка входа неизвестного пользователя: telegram_user_id=%s",
+        LOGGER.info(
+            "Приветствие нового пользователя: telegram_user_id=%s",
             telegram_user_id,
         )
-        return "Доступ ограничен. Обратитесь к администратору системы задач."
 
     first_name = _resolve_first_name(user_entry)
     return f"{greeting}, {first_name}!"
@@ -106,7 +108,7 @@ def register_user(
     role: str,
     username: Optional[str] = None,
 ) -> None:
-    """Добавляет пользователя в белый список."""
+    """Добавляет пользователя в справочник."""
 
     users[telegram_id] = UserEntry(
         telegram_id=telegram_id,
